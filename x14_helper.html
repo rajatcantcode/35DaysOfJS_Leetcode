@@ -1,0 +1,105 @@
+<!-- T
+ The code aims to delay the submission of feedback entered into a 
+ <textarea> element and provides a way to cancel the submission if the user 
+continues typing or decides not to submit within a certain time frame.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delayed Feedback Submission</title>
+    <style>
+        textarea {
+            width: 300px;
+            height: 100px;
+            resize: none;
+            font-size: 16px;
+            padding: 8px;
+        }
+
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Delayed Feedback Submission</h2>
+
+    <textarea id="feedback-textarea" placeholder="Enter your feedback..."></textarea>
+
+    <div class="message" id="feedback-message">
+        <strong>Feedback Submitted:</strong> <span id="feedback-content"></span>
+    </div>
+
+    <script>
+        // Define a function 'cancellable' that starts a timer to execute a given function 'fn'
+        // after a delay 't' milliseconds. It returns another function 'cancelFn',
+        // which, when called before 't' milliseconds, cancels the execution of 'fn'.
+
+        var cancellable = function (fn, args, t) {
+            // Define the cancel function
+            const cancelFn = () => {
+                clearTimeout(timer); // Clears the timer to cancel 'fn' execution
+            };
+
+            // Set a timer to execute 'fn' after 't' milliseconds
+            const timer = setTimeout(() => {
+                fn(...args); // Execute 'fn' with provided arguments 'args'
+            }, t);
+
+            // Return the cancel function
+            return cancelFn;
+        };
+
+        // Example Use Case - Delayed Feedback Submission with Cancellation
+        let cancelPendingSubmission;
+
+        const submitFeedback = (feedback) => {
+            // Simulate feedback submission logic (e.g., sending data to a server)
+            let success = Math.random() < 0.5 ? 0 : 1; // Simulate success/failure 
+            // Convert to 0 or 1 ; 1 - success 0 - failure
+
+            // Update UI based on success of submission
+            const messageElement = document.getElementById('feedback-message');
+            const contentElement = document.getElementById('feedback-content');
+
+            if (success) {
+                contentElement.textContent = feedback;
+                messageElement.style.backgroundColor = '#e6f7e6'; // Light green for success
+            } else {
+                contentElement.textContent = 'Error submitting feedback. Please try again later.';
+                messageElement.style.backgroundColor = '#f2dede'; // Light red for failure
+            }
+
+            messageElement.style.display = 'block'; // Show the message
+        };
+
+        const handleFeedbackChange = (event) => {
+            const feedback = event.target.value;
+
+            // Cancel the previous pending submission if it exists
+            if (cancelPendingSubmission) {
+                console.log('Cancelling previous submission...' + cancelPendingSubmission);
+                cancelPendingSubmission();
+            }
+
+            // Delay the submission by 3 seconds and show loader for better UX  
+            cancelPendingSubmission = cancellable(submitFeedback, [feedback], 3000);
+        };
+
+        // Example usage with a textarea for feedback
+        const feedbackTextarea = document.querySelector('#feedback-textarea');
+        feedbackTextarea.addEventListener('input', handleFeedbackChange);
+    </script>
+
+</body>
+
+</html>
