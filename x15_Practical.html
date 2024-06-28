@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animating Element Position</title>
+    <style>
+        #animatedBox {
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+            position: relative;
+            transition: transform 0.3s ease-in-out;
+            /* Smooth transition effect */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="animatedBox"></div>
+    <script>
+        // Define animation parameters
+        const distanceToMove = 200; // Move 200 pixels horizontally
+        const animationDuration = 1000; // 1 second (1000 milliseconds)
+        const cancelTimeMs = 5000; // Cancel after 5 seconds (5000 milliseconds)
+
+        // Function to animate the horizontal position of an element
+        const animatePosition = (element, distance, duration, cancelTime) => {
+            let currentPosition = 0; // Initial position
+            const step = distance / (duration / duration); // Pixels to move per interval
+
+            // Function to update element's position
+            const updatePosition = () => {
+                currentPosition += step; // Update position
+                element.style.transform = `translateX(${currentPosition}px)`; // Apply new position
+            };
+            // Initial call to start animation immediately
+            updatePosition();
+
+            // Set interval to repeat animation every `duration` milliseconds
+            const intervalId = setInterval(updatePosition, duration);
+
+            // Function to cancel the animation after `cancelTime` milliseconds
+            const cancelFn = () => {
+                clearInterval(intervalId);
+                setTimeout(() => {
+                    element.style.transform = ''; // Reset position to initial state
+                }, duration); // Wait for current animation cycle to complete
+            };
+
+            // Automatically cancel animation after `cancelTime` milliseconds
+            setTimeout(cancelFn, cancelTime);
+
+            return cancelFn;
+        };
+
+        // Example usage:
+        const boxElement = document.getElementById('animatedBox');
+
+        // Start animating the position of `boxElement`
+        const cancelAnimation = animatePosition(boxElement, distanceToMove, animationDuration, cancelTimeMs);
+
+        // Example: Cancel animation after 3 seconds (for testing)
+        setTimeout(cancelAnimation, 3000);
+    </script>
+</body>
+
+</html>
