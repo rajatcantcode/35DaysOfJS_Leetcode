@@ -2,7 +2,7 @@
 var filter = function (arr, fn) {
   let newarray = [];
   for (let i = 0; i < arr.length; i++) {
-    if (fn(arr[i], i)) {
+    if (fn(arr[i])) {
       newarray.push(arr[i]);
     }
   }
